@@ -64,17 +64,17 @@ def select_nome_acao_and_uf(df):
             end_index = min(len(filtered_df), start_index + 50)
             print(filtered_df.iloc[start_index:end_index])
 
-            # Ask if the user wants to see more results
-            while end_index < len(filtered_df):
-                more_results = input("Do you want to see more results? (yes/no): ").lower()
-                if more_results == 'yes':
-                    start_index = end_index
-                    end_index = min(len(filtered_df), start_index + 50)
-                    print(filtered_df.iloc[start_index:end_index])
-                elif more_results == 'no':
-                    break
+            # Ask if the user wants to compare with other UF
+            compare_with_other_uf = input("Do you want to compare with other UF? (yes/no): ").lower()
+            if compare_with_other_uf == 'yes':
+                compare_uf_input = input("Digite a UF desejada para comparação (ex: SP): ").upper()
+                compare_df = df[(df['NOME AÇÃO'] == selected_nome_acao) & (df['UF'] == compare_uf_input)]
+                if not compare_df.empty:
+                    print(f"Comparison with {compare_uf_input}:")
+                    comparison_df = pd.merge(filtered_df, compare_df, on='NOME AÇÃO', suffixes=('_' + uf_input, '_' + compare_uf_input))
+                    print(comparison_df[[f'VALOR TRANSFERIDO_{uf_input}', f'VALOR TRANSFERIDO_{compare_uf_input}']])
                 else:
-                    print("Invalid input. Please enter 'yes' or 'no'.")
+                    print(f"No data available for {compare_uf_input}.")
             
             # Ask if the user wants to see results for another specification
             more_specification = input("Do you want to see results for another specification? (yes/no): ").lower()
