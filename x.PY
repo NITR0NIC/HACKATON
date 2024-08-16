@@ -3,7 +3,7 @@ import pandas as pd
 from zipfile import ZipFile
 from io import BytesIO
 
-# Function to download and extract the CSV files from the link
+# Baixar e extrair arquivos CSV do link
 def download_and_extract_csv(download_link):
     response = requests.get(download_link)
     if response.status_code == 200:
@@ -13,24 +13,24 @@ def download_and_extract_csv(download_link):
     else:
         raise Exception(f"Failed to download the file: {response.status_code}")
 
-# Function to process the CSV files and select specific columns
+# Processar o arquivo CSV e selecionar colunas especificas
 def process_csv_files(csv_files):
     columns_of_interest = ["ANO / MÊS", "UF", "NOME AÇÃO", "VALOR TRANSFERIDO"]
     df_list = []
     for file in csv_files:
         try:
-            df = pd.read_csv(file, sep=';', encoding='latin1')  # Adjust separator and encoding as needed
+            df = pd.read_csv(file, sep=';', encoding='latin1')
             selected_columns = df[columns_of_interest]
             df_list.append(selected_columns)
         except Exception as e:
             print(f"Error processing file {file}: {e}")
     return pd.concat(df_list, ignore_index=True)
 
-# Function to display total entries for each UF
+# Mostrar as entradas totais para UF
 def UFTotal(df):
     print(df['UF'].value_counts())
 
-# Function to display available options for "NOME AÇÃO" and select types
+# Nistrar opcoes disponiveis para as acoes e seletores
 def select_nome_acao_types(df, num_types=20):
     nome_acao_options = df['NOME AÇÃO'].unique()
     print(f"Available options for 'NOME AÇÃO' ({len(nome_acao_options)} in total):")
@@ -49,7 +49,7 @@ def select_nome_acao_types(df, num_types=20):
         else:
             print("Invalid input. Please enter 'yes' or 'no'.")
 
-# Function to select "NOME AÇÃO" and "UF" and display information
+# Selecionar acao e UF para mostrar a informacao
 def select_nome_acao_and_uf(df):
     while True:
         try:
@@ -59,12 +59,12 @@ def select_nome_acao_and_uf(df):
             selected_nome_acao = nome_acao_options[nome_acao_input - 1]
             filtered_df = df[(df['NOME AÇÃO'] == selected_nome_acao) & (df['UF'] == uf_input)]
             
-            # Display the first batch of rows
+            # Mostrar as primeiras fileiras
             start_index = 0
             end_index = min(len(filtered_df), start_index + 50)
             print(filtered_df.iloc[start_index:end_index])
 
-            # Ask if the user wants to compare with other UF
+            # Perguntar se o usuario quer comparar com outras UFs
             compare_with_other_uf = input("Do you want to compare with other UF? (yes/no): ").lower()
             if compare_with_other_uf == 'yes':
                 compare_uf_input = input("Digite a UF desejada para comparação (ex: SP): ").upper()
@@ -76,7 +76,7 @@ def select_nome_acao_and_uf(df):
                 else:
                     print(f"No data available for {compare_uf_input}.")
             
-            # Ask if the user wants to see results for another specification
+            # Perguntar se o usuario quer ver resultados para outras especificacoes
             more_specification = input("Do you want to see results for another specification? (yes/no): ").lower()
             if more_specification == 'no':
                 break
@@ -86,7 +86,7 @@ def select_nome_acao_and_uf(df):
             print("Invalid UF or 'NOME AÇÃO' option.")
 
 def main():
-    # Direct download link for the zip file
+    # Link direto para o arquivo zip
     ano_mes = input("Digite o ano e mês desejado [Formato: AAAAMM]: ")
     download_link = f'https://portaldatransparencia.gov.br/download-de-dados/transferencias/{ano_mes}'
 
@@ -95,10 +95,10 @@ def main():
         df = process_csv_files(csv_files)
         UFTotal(df)
         
-        # Display available options for "NOME AÇÃO" and select types
+        # Mostrar opcoes disponivais para acao
         select_nome_acao_types(df)
         
-        # Select "NOME AÇÃO" and "UF" and display information
+        # Selecionar acao e UF para mostrar informacoes
         select_nome_acao_and_uf(df)
         
     except Exception as e:
